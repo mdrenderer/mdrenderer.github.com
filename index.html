@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>GitHub &amp; BitBucket HTML Preview</title>
+	<title>GitHub &amp; BitBucket HTML &amp; Markdown Preview</title>
 	<style>
 	body {
 		font: 12px 'Helvetica Neue', Helvetica, Arial, freesans, clean, sans-serif;
@@ -33,13 +33,14 @@
 </head>
 <body>
 	<form id="previewform" onsubmit="location.href='/?'+this.file.value;return false">
-		<h1>GitHub &amp; BitBucket HTML Preview</h1>
+		<h1>GitHub &amp; BitBucket HTML &amp; Markdown Preview</h1>
 		<p>
-			Enter URL of the HTML file to preview:
-			<input type="url" id="file" value="" placeholder="e.g. https://github.com/user/repo/blob/master/index.html" size="60" autofocus>
+			Enter URL of the HTML or Markdown file to preview:
+			<input type="url" id="file" value="" placeholder="e.g. https://github.com/user/repo/blob/master/README.md" size="60" autofocus>
 			<input type="submit" value="Preview">
 		</p>
 		<p>or prepend to the URL: <code><strong>http://htmlpreview.github.io/?</strong>https://github.com/twbs/bootstrap/blob/gh-pages/2.3.2/index.html</code></p>
+		<p>Markdown example: <code><strong>http://htmlpreview.github.io/?</strong>https://github.com/htmlpreview/htmlpreview.github.com/blob/master/readme.md</code></p>
 		<p id="footer">Developed by <a href="https://github.com/niutech">niu tech</a> | Contribute on <a href="https://github.com/htmlpreview/htmlpreview.github.com">GitHub</a></p>
 	</form>
 	<script src="/htmlpreview.js"></script>

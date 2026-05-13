@@ -1,8 +1,12 @@
 (function () {
-	
+
 	var previewForm = document.getElementById('previewform');
 
 	var url = location.search.substring(1).replace(/\/\/github\.com/, '//raw.githubusercontent.com').replace(/\/blob\//, '/'); //Get URL of the raw file
+
+	var isMarkdown = function (u) {
+		return /\.md$/i.test(u.split('?')[0]);
+	};
 
 	var replaceAssets = function () {
 		var frame, a, link, links = [], script, scripts = [], i, href, src;
@@ -23,7 +27,7 @@
 			href = a[i].href; //Get absolute URL
 			if (href.indexOf('#') > 0) { //Check if it's an anchor
 				a[i].href = '//' + location.hostname + location.pathname + location.search + '#' + a[i].hash.substring(1); //Then rewrite URL with support for empty anchor
-			} else if ((href.indexOf('//raw.githubusercontent.com') > 0 || href.indexOf('//bitbucket.org') > 0) && (href.indexOf('.html') > 0 || href.indexOf('.htm') > 0)) { //Check if it's from raw.github.com or bitbucket.org and to HTML files
+			} else if ((href.indexOf('//raw.githubusercontent.com') > 0 || href.indexOf('//bitbucket.org') > 0) && (href.indexOf('.html') > 0 || href.indexOf('.htm') > 0 || href.indexOf('.md') > 0)) { //Check if it's from raw.github.com or bitbucket.org and to HTML or Markdown files
 				a[i].href = '//' + location.hostname + location.pathname + '?' + href; //Then rewrite URL so it can be loaded using CORS proxy
 			}
 		}
@@ -86,7 +90,27 @@
 			document.body.appendChild(script);
 		}
 	};
-	
+
+	var loadMarkdown = function (data) {
+		if (!data) return;
+		var script = document.createElement('script');
+		script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+		script.onload = function () {
+			var filename = url.split('/').pop();
+			var body = marked.parse(data);
+			var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + filename + '</title>' +
+				'<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown.min.css">' +
+				'<style>body{box-sizing:border-box;min-width:200px;max-width:980px;margin:0 auto;padding:45px}</style>' +
+				'</head><body class="markdown-body">' + body + '</body></html>';
+			setTimeout(function () {
+				document.open();
+				document.write(html);
+				document.close();
+			}, 10);
+		};
+		document.head.appendChild(script);
+	};
+
 	var fetchProxy = function (url, options, i) {
 		var proxy = [
 			'', // try without proxy first
@@ -103,7 +127,7 @@
 	};
 
 	if (url && url.indexOf(location.hostname) < 0)
-		fetchProxy(url, null, 0).then(loadHTML).catch(function (error) {
+		fetchProxy(url, null, 0).then(isMarkdown(url) ? loadMarkdown : loadHTML).catch(function (error) {
 			console.error(error);
 			previewForm.style.display = 'block';
 			previewForm.innerText = error;
