@@ -5,7 +5,11 @@
 	var url = location.search.substring(1).replace(/\/\/github\.com/, '//raw.githubusercontent.com').replace(/\/blob\//, '/'); //Get URL of the raw file
 
 	var isMarkdown = function (u) {
-		return /\.md$/i.test(u.split('?')[0]);
+		return /\.md$/i.test(u.split('?')[0].split('#')[0]);
+	};
+
+	var isHtml = function (u) {
+		return /\.html?$/i.test(u.split('?')[0].split('#')[0]);
 	};
 
 	var replaceAssets = function () {
@@ -25,10 +29,18 @@
 		a = document.querySelectorAll('a[href]');
 		for (i = 0; i < a.length; ++i) {
 			href = a[i].href; //Get absolute URL
-			if (href.indexOf('#') > 0) { //Check if it's an anchor
-				a[i].href = '//' + location.hostname + location.pathname + location.search + '#' + a[i].hash.substring(1); //Then rewrite URL with support for empty anchor
-			} else if ((href.indexOf('//raw.githubusercontent.com') > 0 || href.indexOf('//bitbucket.org') > 0) && (href.indexOf('.html') > 0 || href.indexOf('.htm') > 0 || href.indexOf('.md') > 0)) { //Check if it's from raw.github.com or bitbucket.org and to HTML or Markdown files
-				a[i].href = '//' + location.hostname + location.pathname + '?' + href; //Then rewrite URL so it can be loaded using CORS proxy
+			var isHosted = href.indexOf('//raw.githubusercontent.com') > 0 || href.indexOf('//bitbucket.org') > 0;
+			var hashIdx = href.indexOf('#');
+			if (hashIdx >= 0) {
+				var hrefBase = href.substring(0, hashIdx);
+				var dirUrl = new URL('.', url).href;
+				if (hrefBase === url || hrefBase === dirUrl) { //Same-file anchor: works for HTML (base=url) and Markdown (base=dirUrl)
+					a[i].href = '//' + location.hostname + location.pathname + location.search + href.substring(hashIdx);
+				} else if (isHosted && (isHtml(href) || isMarkdown(href))) { //Cross-file link with anchor
+					a[i].href = '//' + location.hostname + location.pathname + '?' + href;
+				}
+			} else if (isHosted && (isHtml(href) || isMarkdown(href))) { //Cross-file link without anchor
+				a[i].href = '//' + location.hostname + location.pathname + '?' + href;
 			}
 		}
 		//Stylesheets
@@ -96,8 +108,8 @@
 		var script = document.createElement('script');
 		script.src = 'https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js';
 		script.onload = function () {
-			var filename = url.split('/').pop();
-			var baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
+			var filename = url.split('?')[0].split('#')[0].split('/').pop();
+			var baseUrl = new URL('.', url).href;
 			var body = marked.parse(data);
 			var tocbotBase = 'https://cdn.jsdelivr.net/npm/tocbot@4.25.0/dist/tocbot';
 			var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><base href="' + baseUrl + '"><title>' + filename + '</title>' +
@@ -144,6 +156,7 @@
 				document.open();
 				document.write(html);
 				document.close();
+				replaceAssets();
 			}, 10);
 		};
 		document.head.appendChild(script);
