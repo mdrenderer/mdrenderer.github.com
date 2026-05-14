@@ -117,20 +117,22 @@
 				'<style>' +
 				'*,*::before,*::after{box-sizing:border-box}' +
 				'html{scroll-behavior:smooth}' +
-				'body{margin:0;display:flex;background:Canvas;color:CanvasText;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}' +
+				':root{color-scheme:light dark;--color-canvas-default:#fff;--color-fg-default:#1f2328;--color-fg-muted:#59636e;--color-border-default:#d1d9e0;--color-accent-fg:#0969da;--color-neutral-muted:rgba(140,149,159,.15)}' +
+				'@media (prefers-color-scheme:dark){:root{--color-canvas-default:#0d1117;--color-fg-default:#f0f6fc;--color-fg-muted:#9198a1;--color-border-default:#3d444d;--color-accent-fg:#4493f8;--color-neutral-muted:rgba(101,108,118,.2)}}' +
+				'body{margin:0;display:flex;background:var(--color-canvas-default);color:var(--color-fg-default);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}' +
 				'#toc-wrapper{display:none;flex-shrink:0;position:sticky;top:0;align-self:flex-start}' +
 				'body.has-toc #toc-wrapper{display:block}' +
 				'#toc-header{display:flex;align-items:center;gap:8px;padding:12px}' +
-				'body.toc-open #toc-wrapper{width:260px;max-height:100vh;overflow-y:auto;border-right:1px solid #d0d7de;background:Canvas}' +
-				'body.toc-open #toc-header{padding:16px;border-bottom:1px solid #d0d7de}' +
-				'#toc-toggle{background:Canvas;border:1px solid #d0d7de;border-radius:6px;padding:5px 9px;cursor:pointer;font-size:15px;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.1);flex-shrink:0}' +
-				'#toc-toggle:hover{background:color-mix(in srgb,CanvasText 8%,Canvas)}' +
-				'#toc-label{display:none;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#57606a;font-weight:600}' +
+				'body.toc-open #toc-wrapper{width:260px;max-height:100vh;overflow-y:auto;border-right:1px solid var(--color-border-default);background:var(--color-canvas-default)}' +
+				'body.toc-open #toc-header{padding:16px;border-bottom:1px solid var(--color-border-default)}' +
+				'#toc-toggle{background:var(--color-canvas-default);color:var(--color-fg-default);border:1px solid var(--color-border-default);border-radius:6px;padding:5px 9px;cursor:pointer;font-size:15px;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.1);flex-shrink:0}' +
+				'#toc-toggle:hover{background:var(--color-neutral-muted)}' +
+				'#toc-label{display:none;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--color-fg-muted);font-weight:600}' +
 				'body.toc-open #toc-label{display:block}' +
 				'#toc-nav{display:none;padding:12px 16px;font-size:13px}' +
 				'body.toc-open #toc-nav{display:block}' +
-				'#toc-nav .toc-link{color:#57606a;text-decoration:none;display:block;padding:2px 4px;border-radius:4px}' +
-				'#toc-nav .toc-link:hover,#toc-nav .is-active-link{color:#0969da;background:color-mix(in srgb,CanvasText 8%,Canvas)}' +
+				'#toc-nav .toc-link{color:var(--color-fg-muted);text-decoration:none;display:block;padding:2px 4px;border-radius:4px}' +
+				'#toc-nav .toc-link:hover,#toc-nav .is-active-link{color:var(--color-accent-fg);background:var(--color-neutral-muted)}' +
 				'#toc-nav .is-active-link{font-weight:600}' +
 				'.toc-list{list-style:none;padding-left:12px;margin:4px 0}' +
 				'#main{flex:1;min-width:0;padding:48px 64px 80px}' +
@@ -146,7 +148,7 @@
 				'if(headings.length>=3){' +
 				'var link=document.createElement("link");link.rel="stylesheet";link.href="' + tocbotBase + '.css";document.head.appendChild(link);' +
 				'var s=document.createElement("script");s.src="' + tocbotBase + '.min.js";' +
-				's.onload=function(){tocbot.init({tocSelector:"#toc-nav",contentSelector:".markdown-body",headingSelector:"h1,h2,h3,h4",collapseDepth:3,scrollSmooth:true,orderedList:false});document.body.classList.add("has-toc");};' +
+				's.onload=function(){tocbot.init({tocSelector:"#toc-nav",contentSelector:".markdown-body",headingSelector:"h1,h2,h3,h4",collapseDepth:3,scrollSmooth:true,orderedList:false});var pageUrl=location.origin+location.pathname+location.search;document.querySelectorAll("#toc-nav a[href^=\\"#\\"]").forEach(function(a){a.setAttribute("href",pageUrl+a.getAttribute("href"));});document.body.classList.add("has-toc");};' +
 				'document.head.appendChild(s);' +
 				'}' +
 				'toggle.addEventListener("click",function(){var open=document.body.classList.toggle("toc-open");toggle.setAttribute("aria-expanded",open?"true":"false");});' +
