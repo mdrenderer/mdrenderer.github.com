@@ -101,8 +101,43 @@
 			var body = marked.parse(data);
 			var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><base href="' + baseUrl + '"><title>' + filename + '</title>' +
 				'<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown.min.css">' +
-				'<style>body{box-sizing:border-box;min-width:200px;max-width:980px;margin:0 auto;padding:45px}</style>' +
-				'</head><body class="markdown-body">' + body + '</body></html>';
+				'<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot/dist/tocbot.css">' +
+				'<style>' +
+				'*,*::before,*::after{box-sizing:border-box}' +
+				'html{scroll-behavior:smooth}' +
+				'body{margin:0;display:flex;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}' +
+				'#toc-sidebar{display:none;width:260px;flex-shrink:0;padding:24px 16px;border-right:1px solid #d0d7de;position:sticky;top:0;align-self:flex-start;max-height:100vh;overflow-y:auto;font-size:13px;background:#fff}' +
+				'#toc-sidebar .toc-link{color:#57606a;text-decoration:none;display:block;padding:2px 4px;border-radius:4px}' +
+				'#toc-sidebar .toc-link:hover,#toc-sidebar .is-active-link{color:#0969da;background:#f6f8fa}' +
+				'#toc-sidebar .is-active-link{font-weight:600}' +
+				'.toc-list{list-style:none;padding-left:12px;margin:4px 0}' +
+				'.toc-list>.toc-list-item{padding-left:0}' +
+				'#toc-toggle{position:fixed;top:12px;left:12px;z-index:100;background:#fff;border:1px solid #d0d7de;border-radius:6px;padding:5px 9px;cursor:pointer;font-size:15px;line-height:1;display:none;box-shadow:0 1px 3px rgba(0,0,0,.1)}' +
+				'#toc-toggle:hover{background:#f6f8fa}' +
+				'body.toc-open #toc-sidebar{display:block}' +
+				'#main{flex:1;min-width:0;padding:48px 48px 80px}' +
+				'.markdown-body{max-width:800px;margin:0 auto}' +
+				'</style>' +
+				'</head><body>' +
+				'<button id="toc-toggle" title="Toggle outline">&#9776;</button>' +
+				'<nav id="toc-sidebar"><strong style="display:block;margin-bottom:8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#57606a">Outline</strong></nav>' +
+				'<main id="main"><article class="markdown-body">' + body + '</article></main>' +
+				'<script>' +
+				'(function(){' +
+				'var headings=document.querySelectorAll(".markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4");' +
+				'if(headings.length>=3){' +
+				'var s=document.createElement("script");' +
+				's.src="https://cdn.jsdelivr.net/npm/tocbot/dist/tocbot.min.js";' +
+				's.onload=function(){' +
+				'tocbot.init({tocSelector:"#toc-sidebar",contentSelector:".markdown-body",headingSelector:"h1,h2,h3,h4",collapseDepth:3,scrollSmooth:true,orderedList:false});' +
+				'document.getElementById("toc-toggle").style.display="block";' +
+				'};' +
+				'document.head.appendChild(s);' +
+				'}' +
+				'document.getElementById("toc-toggle").addEventListener("click",function(){document.body.classList.toggle("toc-open");});' +
+				'})();' +
+				'<\/script>' +
+				'</body></html>';
 			setTimeout(function () {
 				document.open();
 				document.write(html);
