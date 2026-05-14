@@ -29,10 +29,18 @@
 		a = document.querySelectorAll('a[href]');
 		for (i = 0; i < a.length; ++i) {
 			href = a[i].href; //Get absolute URL
-			if (a[i].hash && href.split('#')[0] === url) { //Check if it's a same-file anchor (not a cross-file link that happens to have a hash)
-				a[i].href = '//' + location.hostname + location.pathname + location.search + '#' + a[i].hash.substring(1); //Then rewrite URL with support for empty anchor
-			} else if ((href.indexOf('//raw.githubusercontent.com') > 0 || href.indexOf('//bitbucket.org') > 0) && (isHtml(href) || isMarkdown(href))) { //Check if it's from raw.github.com or bitbucket.org and to HTML or Markdown files
-				a[i].href = '//' + location.hostname + location.pathname + '?' + href; //Then rewrite URL so it can be loaded using CORS proxy
+			var isHosted = href.indexOf('//raw.githubusercontent.com') > 0 || href.indexOf('//bitbucket.org') > 0;
+			var hashIdx = href.indexOf('#');
+			if (hashIdx >= 0) {
+				var hrefBase = href.substring(0, hashIdx);
+				var dirUrl = new URL('.', url).href;
+				if (hrefBase === url || hrefBase === dirUrl) { //Same-file anchor: works for HTML (base=url) and Markdown (base=dirUrl)
+					a[i].href = '//' + location.hostname + location.pathname + location.search + href.substring(hashIdx);
+				} else if (isHosted && (isHtml(href) || isMarkdown(href))) { //Cross-file link with anchor
+					a[i].href = '//' + location.hostname + location.pathname + '?' + href;
+				}
+			} else if (isHosted && (isHtml(href) || isMarkdown(href))) { //Cross-file link without anchor
+				a[i].href = '//' + location.hostname + location.pathname + '?' + href;
 			}
 		}
 		//Stylesheets
