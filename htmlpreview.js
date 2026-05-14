@@ -105,22 +105,26 @@
 				'<style>' +
 				'*,*::before,*::after{box-sizing:border-box}' +
 				'html{scroll-behavior:smooth}' +
-				'body{margin:0;display:flex;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}' +
-				'#toc-wrapper{display:none;width:260px;flex-shrink:0;padding:24px 16px;border-right:1px solid #d0d7de;position:sticky;top:0;align-self:flex-start;max-height:100vh;overflow-y:auto;font-size:13px;background:#fff}' +
-				'#toc-label{display:block;margin-bottom:8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#57606a}' +
-				'#toc-sidebar .toc-link{color:#57606a;text-decoration:none;display:block;padding:2px 4px;border-radius:4px}' +
-				'#toc-sidebar .toc-link:hover,#toc-sidebar .is-active-link{color:#0969da;background:#f6f8fa}' +
-				'#toc-sidebar .is-active-link{font-weight:600}' +
+				'body{margin:0;display:flex;background:Canvas;color:CanvasText;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}' +
+				'#toc-wrapper{display:none;flex-shrink:0;position:sticky;top:0;align-self:flex-start}' +
+				'body.has-toc #toc-wrapper{display:block}' +
+				'#toc-header{display:flex;align-items:center;gap:8px;padding:12px}' +
+				'body.toc-open #toc-wrapper{width:260px;max-height:100vh;overflow-y:auto;border-right:1px solid #d0d7de;background:Canvas}' +
+				'body.toc-open #toc-header{padding:16px;border-bottom:1px solid #d0d7de}' +
+				'#toc-toggle{background:Canvas;border:1px solid #d0d7de;border-radius:6px;padding:5px 9px;cursor:pointer;font-size:15px;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.1);flex-shrink:0}' +
+				'#toc-toggle:hover{background:color-mix(in srgb,CanvasText 8%,Canvas)}' +
+				'#toc-label{display:none;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#57606a;font-weight:600}' +
+				'body.toc-open #toc-label{display:block}' +
+				'#toc-nav{display:none;padding:12px 16px;font-size:13px}' +
+				'body.toc-open #toc-nav{display:block}' +
+				'#toc-nav .toc-link{color:#57606a;text-decoration:none;display:block;padding:2px 4px;border-radius:4px}' +
+				'#toc-nav .toc-link:hover,#toc-nav .is-active-link{color:#0969da;background:color-mix(in srgb,CanvasText 8%,Canvas)}' +
+				'#toc-nav .is-active-link{font-weight:600}' +
 				'.toc-list{list-style:none;padding-left:12px;margin:4px 0}' +
-				'#toc-toggle{position:fixed;top:12px;left:12px;z-index:100;background:#fff;border:1px solid #d0d7de;border-radius:6px;padding:5px 9px;cursor:pointer;font-size:15px;line-height:1;display:none;box-shadow:0 1px 3px rgba(0,0,0,.1)}' +
-				'#toc-toggle:hover{background:#f6f8fa}' +
-				'body.toc-open #toc-wrapper{display:block}' +
-				'#main{flex:1;min-width:0;padding:48px 48px 80px}' +
-				'.markdown-body{max-width:800px;margin:0 auto}' +
+				'#main{flex:1;min-width:0;padding:48px 64px 80px}' +
 				'</style>' +
 				'</head><body>' +
-				'<button id="toc-toggle" aria-label="Toggle outline" aria-expanded="false" aria-controls="toc-sidebar" title="Toggle outline">&#9776;</button>' +
-				'<aside id="toc-wrapper"><strong id="toc-label">Outline</strong><nav id="toc-sidebar"></nav></aside>' +
+				'<aside id="toc-wrapper"><div id="toc-header"><button id="toc-toggle" aria-label="Toggle outline" aria-expanded="false" aria-controls="toc-nav">&#9776;</button><strong id="toc-label">Outline</strong></div><nav id="toc-nav"></nav></aside>' +
 				'<main id="main"><article class="markdown-body">' + body + '</article></main>' +
 				'<script>(function(){' +
 				'var toggle=document.getElementById("toc-toggle");' +
@@ -130,7 +134,7 @@
 				'if(headings.length>=3){' +
 				'var link=document.createElement("link");link.rel="stylesheet";link.href="' + tocbotBase + '.css";document.head.appendChild(link);' +
 				'var s=document.createElement("script");s.src="' + tocbotBase + '.min.js";' +
-				's.onload=function(){tocbot.init({tocSelector:"#toc-sidebar",contentSelector:".markdown-body",headingSelector:"h1,h2,h3,h4",collapseDepth:3,scrollSmooth:true,orderedList:false});toggle.style.display="block";};' +
+				's.onload=function(){tocbot.init({tocSelector:"#toc-nav",contentSelector:".markdown-body",headingSelector:"h1,h2,h3,h4",collapseDepth:3,scrollSmooth:true,orderedList:false});document.body.classList.add("has-toc");};' +
 				'document.head.appendChild(s);' +
 				'}' +
 				'toggle.addEventListener("click",function(){var open=document.body.classList.toggle("toc-open");toggle.setAttribute("aria-expanded",open?"true":"false");});' +
