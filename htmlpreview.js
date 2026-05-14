@@ -148,6 +148,7 @@
 				document.open();
 				document.write(html);
 				document.close();
+				replaceAssets();
 			}, 10);
 		};
 		document.head.appendChild(script);
