@@ -97,8 +97,9 @@
 		script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
 		script.onload = function () {
 			var filename = url.split('/').pop();
+			var baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
 			var body = marked.parse(data);
-			var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + filename + '</title>' +
+			var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><base href="' + baseUrl + '"><title>' + filename + '</title>' +
 				'<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown.min.css">' +
 				'<style>body{box-sizing:border-box;min-width:200px;max-width:980px;margin:0 auto;padding:45px}</style>' +
 				'</head><body class="markdown-body">' + body + '</body></html>';
