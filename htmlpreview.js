@@ -94,49 +94,47 @@
 	var loadMarkdown = function (data) {
 		if (!data) return;
 		var script = document.createElement('script');
-		script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+		script.src = 'https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js';
 		script.onload = function () {
 			var filename = url.split('/').pop();
 			var baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
 			var body = marked.parse(data);
+			var tocbotBase = 'https://cdn.jsdelivr.net/npm/tocbot@4.25.0/dist/tocbot';
 			var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><base href="' + baseUrl + '"><title>' + filename + '</title>' +
 				'<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown.min.css">' +
-				'<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot/dist/tocbot.css">' +
 				'<style>' +
 				'*,*::before,*::after{box-sizing:border-box}' +
 				'html{scroll-behavior:smooth}' +
 				'body{margin:0;display:flex;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}' +
-				'#toc-sidebar{display:none;width:260px;flex-shrink:0;padding:24px 16px;border-right:1px solid #d0d7de;position:sticky;top:0;align-self:flex-start;max-height:100vh;overflow-y:auto;font-size:13px;background:#fff}' +
+				'#toc-wrapper{display:none;width:260px;flex-shrink:0;padding:24px 16px;border-right:1px solid #d0d7de;position:sticky;top:0;align-self:flex-start;max-height:100vh;overflow-y:auto;font-size:13px;background:#fff}' +
+				'#toc-label{display:block;margin-bottom:8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#57606a}' +
 				'#toc-sidebar .toc-link{color:#57606a;text-decoration:none;display:block;padding:2px 4px;border-radius:4px}' +
 				'#toc-sidebar .toc-link:hover,#toc-sidebar .is-active-link{color:#0969da;background:#f6f8fa}' +
 				'#toc-sidebar .is-active-link{font-weight:600}' +
 				'.toc-list{list-style:none;padding-left:12px;margin:4px 0}' +
-				'.toc-list>.toc-list-item{padding-left:0}' +
 				'#toc-toggle{position:fixed;top:12px;left:12px;z-index:100;background:#fff;border:1px solid #d0d7de;border-radius:6px;padding:5px 9px;cursor:pointer;font-size:15px;line-height:1;display:none;box-shadow:0 1px 3px rgba(0,0,0,.1)}' +
 				'#toc-toggle:hover{background:#f6f8fa}' +
-				'body.toc-open #toc-sidebar{display:block}' +
+				'body.toc-open #toc-wrapper{display:block}' +
 				'#main{flex:1;min-width:0;padding:48px 48px 80px}' +
 				'.markdown-body{max-width:800px;margin:0 auto}' +
 				'</style>' +
 				'</head><body>' +
-				'<button id="toc-toggle" title="Toggle outline">&#9776;</button>' +
-				'<nav id="toc-sidebar"><strong style="display:block;margin-bottom:8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#57606a">Outline</strong></nav>' +
+				'<button id="toc-toggle" aria-label="Toggle outline" aria-expanded="false" aria-controls="toc-sidebar" title="Toggle outline">&#9776;</button>' +
+				'<aside id="toc-wrapper"><strong id="toc-label">Outline</strong><nav id="toc-sidebar"></nav></aside>' +
 				'<main id="main"><article class="markdown-body">' + body + '</article></main>' +
-				'<script>' +
-				'(function(){' +
+				'<script>(function(){' +
+				'var toggle=document.getElementById("toc-toggle");' +
 				'var headings=document.querySelectorAll(".markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4");' +
+				'var seen={};' +
+				'headings.forEach(function(h){if(!h.id){var base=h.textContent.toLowerCase().replace(/[^\\w]+/g,"-").replace(/^-|-$/g,"");var id=base,n=1;while(seen[id]){id=base+"-"+(++n);}seen[id]=true;h.id=id;}});' +
 				'if(headings.length>=3){' +
-				'var s=document.createElement("script");' +
-				's.src="https://cdn.jsdelivr.net/npm/tocbot/dist/tocbot.min.js";' +
-				's.onload=function(){' +
-				'tocbot.init({tocSelector:"#toc-sidebar",contentSelector:".markdown-body",headingSelector:"h1,h2,h3,h4",collapseDepth:3,scrollSmooth:true,orderedList:false});' +
-				'document.getElementById("toc-toggle").style.display="block";' +
-				'};' +
+				'var link=document.createElement("link");link.rel="stylesheet";link.href="' + tocbotBase + '.css";document.head.appendChild(link);' +
+				'var s=document.createElement("script");s.src="' + tocbotBase + '.min.js";' +
+				's.onload=function(){tocbot.init({tocSelector:"#toc-sidebar",contentSelector:".markdown-body",headingSelector:"h1,h2,h3,h4",collapseDepth:3,scrollSmooth:true,orderedList:false});toggle.style.display="block";};' +
 				'document.head.appendChild(s);' +
 				'}' +
-				'document.getElementById("toc-toggle").addEventListener("click",function(){document.body.classList.toggle("toc-open");});' +
-				'})();' +
-				'<\/script>' +
+				'toggle.addEventListener("click",function(){var open=document.body.classList.toggle("toc-open");toggle.setAttribute("aria-expanded",open?"true":"false");});' +
+				'})();<\/script>' +
 				'</body></html>';
 			setTimeout(function () {
 				document.open();
